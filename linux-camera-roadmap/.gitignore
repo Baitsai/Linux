@@ -1,0 +1,16 @@
+# CMake build files
+build/
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+
+# Generated files
+output.jpg
+
+# macOS
+.DS_Store
+
+# Editor
+.vscode/
+.idea/
