@@ -1,7 +1,10 @@
 ### Linux
 Week 1	單執行緒影片與基礎影像處理	可編譯、可執行	完成基本README
+
 Week 2	多執行緒Producer–Consumer	安全停止、丟幀策略	加入測試與架構圖
+
 Week 3	Linux/V4L2 Camera Backend	mmap/ioctl概念	加入除錯紀錄
+
 Week 4	Benchmark與完整作品集	效能比較、Demo GIF	可放履歷與面試展示
 
 
