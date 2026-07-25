@@ -6,3 +6,12 @@
 | deque         | 分段式連續記憶體    | 頭尾都需要新增或刪除 | push_front、push_back |
 | queue         | FIFO 容器轉接器    | 工作佇列、影像幀佇列 | push、pop、front |
 | unordered_map | Hash Table       | 透過 key 快速查詢 | find、contains、operator[] |
+
+## 時間複雜度
+
+| Container     | 尾端新增    | 頭端刪除     | 隨機存取     | 依 key 查詢   | 
+| ------------- | ---------- | ---------- | ----------- | ------------ |
+| vector        | 平均 O(1)   | O(n)       | O(1)        | X            |
+| deque         | O(1)       | O(1)       | O(1)        | X            |
+| queue         | O(1)       | O(n)       | X           | X            |
+| unordered_map | X          | X          | X           | 平均 O(1)     |
