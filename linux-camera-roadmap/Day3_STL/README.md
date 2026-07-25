@@ -213,7 +213,7 @@ queue_.push(std::move(value)); // x還是合法物件，但內容變成「有效
 ```
 規則
 ```cpp 
-void f(T value);        // 複製一份
+void f(T value);        // 建立一份自己的物件
 void f(T& value);       // 使用並可修改原物件
 void f(const T& value); // 使用原物件，但不修改，也避免複製
 void f(T&& value);      // 接收可被移動的物件
