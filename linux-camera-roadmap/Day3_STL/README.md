@@ -110,6 +110,16 @@ std::vector<unsigned char> moved = std::move(image);
 
 std::move 本身沒有搬資料，它只是把物件轉換成右值，表示這個物件的資源可以被接手。  
 真正執行資源轉移的是該型別的：move constructor 或 move assignment operator
+```cpp
+T x;
+T&& value = std::move(x);
+```
+此時 value 並不是另一個新物件，它只是 x 的別名。
+所以：
+```cpp
+std::move(value)
+```
+本質上仍是在把同一個 x 當成右值傳下去。
 
 例如：
 ```cpp
@@ -121,14 +131,26 @@ std::move(source) 只是允許 std::string 呼叫移動建構子。
 
 ## 左值與右值
 
-### 左值 lvalue: 有名稱、可以持續存取的物件
+### 左值 lvalue: 有固定身分、可以定位再次存取的物件
 ```cpp
 std::string name = "Alice"; // name 是左值
 
 queue.push(name); // 此時通常會複製
 ```
+```cpp
+int x = 10;
+```
+x 是左值，因為：
+* 有名字
+* 可以重複使用
+* 可以取地址
 
 ### 右值 rvalue: 臨時物件或即將不再使用的值
+例如：
+* 數字 10 是右值。
+* int x = 10 + 20 => 10 + 20產生一個暫時結果 30運算結果也是右值。
+* std::string("hello") 這個臨時字串也是右值。
+
 ```cpp
 queue.push(std::string("Alice")); // std::string("Alice") 是臨時物件，通常會移動。
 
@@ -155,6 +177,66 @@ queue.push(frame);
 queue.push(std::move(frame));
 ```
 在 Camera Pipeline 中，move semantics 很重要，因為影像資料通常很大
+
+### 套回 BoundedQueue
+```cpp
+bool push(T&& value) {
+    if (full()) {
+        return false;
+    }
+
+    queue_.push(std::move(value));
+    return true;
+}
+```
+呼叫：
+```cpp
+std::string x = "frame";
+queue.push(std::move(x));
+```
+
+流程是：
+```cpp
+std::move(x) //產生右值表達式，因此可以綁定到 T&& value
+```
+
+進入函式後，value 是 x 的別名。但直接寫：queue_.push(value);  
+此時 value 是具名表達式，所以是左值，底層可能選到複製版本： push(const T&)   
+原來的x通常不會被搬空，因為實際發生的是複製  
+
+因此要把具名左值重新轉成右值，底層才會選push(T&&)：
+```cpp 
+queue_.push(std::move(value)); // x還是合法物件，但內容變成「有效但未指定」
+```
+規則
+```cpp 
+void f(T value);        // 複製一份
+void f(T& value);       // 使用並可修改原物件
+void f(const T& value); // 使用原物件，但不修改，也避免複製
+void f(T&& value);      // 接收可被移動的物件
+```
+
+### pass-by-value
+也可以只寫一個 pass-by-value 版本：
+```cpp
+bool push(T value) {
+    if (full()) {
+        return false;
+    }
+
+    queue_.push(std::move(value));
+    return true;
+}
+```
+使用時：
+```cpp
+queue.push(x);             // 先 copy 到 value，再 move 進 queue
+queue.push(std::move(x));  // move 到 value，再 move 進 queue
+queue.push(T{});           // move
+```
+不過有一個細節：如果 Queue 已滿，pass-by-value 版本可能已經先複製或移動參數，才進入函式檢查 full()。
+原本兩個 reference overload 則可以先檢查 Queue 是否已滿，再決定是否複製或移動。
+因此BoundedQueue 寫兩個版本是比較完整且有效率的做法，但不是語法上的必要條件。
 
 ## std::unique_ptr 為什麼只能 move？
 ```cpp

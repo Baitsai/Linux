@@ -35,8 +35,7 @@ public:
     explicit BoundedQueue(size_type capacity) // explicit -> README.md: explicit
         : capacity_(capacity) {
         if (capacity_ == 0) {
-            // 若使用者給的容量不合法，就丟出例外。
-            // throw 表示發生錯誤，將例外傳給呼叫端
+            // 若使用者給的容量不合法就丟例外。throw 表示發生錯誤，將例外傳給呼叫端
             throw std::invalid_argument(
                 "BoundedQueue capacity must be greater than zero"
             );
@@ -49,6 +48,7 @@ public:
      * @return true 新增成功。
      * @return false Queue 已滿。
      */
+     // 不管傳左值還是臨時物件，最後通常都會copy進 Queue
     bool push(const T& value) {
         if (full()) {
             return false;
@@ -64,6 +64,7 @@ public:
      * @return true 新增成功。
      * @return false Queue 已滿。
      */
+     // 只能直接接受右值 可以支援queue.push(std::move(x))
     bool push(T&& value) {
         if (full()) {
             return false;
@@ -72,6 +73,7 @@ public:
         queue_.push(std::move(value));
         return true;
     }
+    
 
     /**
      * @brief 直接在 Queue 內部建立元素。
