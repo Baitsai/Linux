@@ -181,16 +181,17 @@ target_compile_options(hello_opencv
 進入 LLDB 後：(lldb) breakpoint set --name main  
              (lldb) run  
 
-         => 如果顯示 Breakpoint 1: 32 locations. 這代表 LLDB 找到 32 個名稱叫 main 的位置  
-            通常因為正在除錯的執行檔連結了很多函式庫，其中可能包含其他符號或 除錯資訊。  
-            不一定是錯誤，但對程式來說太寬泛了。改用「檔名 + 行號」會更精確。  
-            假設 main() 在 day2_main.cpp： (lldb) breakpoint set --file day2_main.cpp --name main. 
-            或直接指定行號，例如 main() 在第 23 行：(lldb) breakpoint set --file day2_main.cpp --line 23. 
+如果顯示 Breakpoint 1: 32 locations. 這代表 LLDB 找到 32 個名稱叫 main 的位置  
+通常因為正在除錯的執行檔連結了很多函式庫，其中可能包含其他符號或 除錯資訊。  
+不一定是錯誤，但對程式來說太寬泛了。改用「檔名 + 行號」會更精確。  
+假設 main() 在 day2_main.cpp： (lldb) breakpoint set --file day2_main.cpp --name main. 
+或直接指定行號，例如 main() 在第 23 行：(lldb) breakpoint set --file day2_main.cpp --line 23. 
 
-        也可以先刪除剛才的 breakpoint：(lldb) breakpoint delete   
-        再重新設定：(lldb) breakpoint set --file day2_main.cpp --name main. 
+也可以先刪除剛才的 breakpoint：(lldb) breakpoint delete   
+再重新設定：(lldb) breakpoint set --file day2_main.cpp --name main. 
 
 在 main() 停下來後程式停在 make_unique 尚未執行的位置：(lldb) next 逐行執行。  
+
 ```cpp
 (lldb) next
 Process 99887 stopped
@@ -213,11 +214,13 @@ frame variable frame 查看變數成功建立
 }
 ```
 
-unique_ptr 本身不是那個物件，它是一個「擁有者物件」，裡面保存一個普通指標，指向 heap 上真正的物件。  
-frame  
-└── 內部保存一個 Frame*. 
+unique_ptr 本身不是那個物件，它是一個「擁有者物件」，裡面保存一個普通指標，指向 heap 上真正的物件。
+
+frame.  
+└─ 內部保存一個 Frame*. 
     └── 指向 heap 上的 Frame 物件  
-假設 LLDB 顯示 __value_ = 0x0000000144204080  
+
+假設 LLDB 顯示 __value_ = 0x0000000144204080   
 這個位址就是它內部保存的原始指標值 指向真正的 Frame  
 
 執行到 make_unique 後，可查看：(lldb) p frame.get(). 
@@ -226,11 +229,12 @@ frame.get() 會回傳 unique_ptr 內部保存的原始指標。
 查看 Frame： (lldb) p *frame  
 查看個別成員：
 ```cpp
-            (lldb) p frame->width
-            (lldb) p frame->height
-            (lldb) p frame->channels
-            (lldb) p frame->data.size()
-            ```
+(lldb) p frame->width
+(lldb) p frame->height
+(lldb) p frame->channels
+(lldb) p frame->data.size()
+```
+
 繼續執行：(lldb) continue  
 離開：   (lldb) quit. 
 
