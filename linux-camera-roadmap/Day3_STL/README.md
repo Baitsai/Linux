@@ -13,5 +13,14 @@
 | ------------- | ---------- | ---------- | ----------- | ------------ |
 | vector        | 平均 O(1)   | O(n)       | O(1)        | X            |
 | deque         | O(1)       | O(1)       | O(1)        | X            |
-| queue         | O(1)       | O(n)       | X           | X            |
+| queue         | O(1)       | O(1)       | X           | X            |
 | unordered_map | X          | X          | X           | 平均 O(1)     |
+
+std::queue 預設使用 std::deque 作為底層容器：
+```cpp
+std::queue<int> queue;
+```
+大致相當於：
+```cpp
+std::queue<int, std::deque<int>> queue;
+```
