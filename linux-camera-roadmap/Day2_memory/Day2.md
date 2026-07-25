@@ -217,7 +217,7 @@ frame variable frame 查看變數成功建立
 unique_ptr 本身不是那個物件，它是一個「擁有者物件」，裡面保存一個普通指標，指向 heap 上真正的物件。
 
 frame.  
-└─ 內部保存一個 Frame*. 
+└─ 內部保存一個 Frame*.  
     └── 指向 heap 上的 Frame 物件  
 
 假設 LLDB 顯示 __value_ = 0x0000000144204080   
@@ -234,12 +234,11 @@ frame.get() 會回傳 unique_ptr 內部保存的原始指標。
 (lldb) p frame->channels
 (lldb) p frame->data.size()
 ```
-
 繼續執行：(lldb) continue  
 離開：   (lldb) quit. 
 
-##### LLDB / GDB→ 用來停住程式、逐行執行、查看變數
-##### Valgrind / AddressSanitizer→ 用來偵測記憶體錯誤
+* LLDB / GDB→ 用來停住程式、逐行執行、查看變數
+* Valgrind / AddressSanitizer→ 用來偵測記憶體錯誤
 
 #### macOS 用 AddressSanitizer
 在 CMakeLists.txt 加入以下 用 day2_heap_overflow.cpp
@@ -409,8 +408,8 @@ std::cout << *value << '\n';  // 錯誤：use-after-free
 
 這時 value 就是 dangling pointer。
 
-Memory leak → 記憶體仍存在，但已經沒有可靠的方法釋放它
-Dangling pointer→ 記憶體已失效，但指標還指向那裡
+* Memory leak → 記憶體仍存在，但已經沒有可靠的方法釋放它
+* Dangling pointer→ 記憶體已失效，但指標還指向那裡
 
 ### Null pointer dereference
 
