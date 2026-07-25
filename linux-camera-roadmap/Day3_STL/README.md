@@ -72,7 +72,7 @@ private:
     std::queue<T> queue_;
 };
 ```
-    typename 也可以寫成 class：
+typename 也可以寫成 class：
 ```cpp
 template <class T>
 class BoundedQueue;
