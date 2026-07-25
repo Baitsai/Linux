@@ -80,3 +80,41 @@ class BoundedQueue;
 * 支援 move semantics(不複製物件擁有的資源，而是把資源的所有權轉移給另一個物)
     這對大型資料很重要，例如：std::string std::vector 影像buffer Frame std::unique_ptr. 
 * 不負責多執行緒同步
+
+## Copy 與 Move 的差異
+
+假設有一個很大的影像資料：
+```cpp
+std::vector<unsigned char> image(1920 * 1080 * 3);
+```
+### Copy
+```cpp
+std::vector<unsigned char> copy = image;
+```
+* 配置一塊新的記憶體
+* 把數百萬個元素複製過去
+* image 和 copy 各自擁有一份資料
+成本通常是 O(n)。  
+
+### Move
+```cpp
+std::vector<unsigned char> moved = std::move(image);
+```
+通常不會逐個複製元素，而是把內部指標、容量等資源轉交給 moved。 
+
+移動前：image ──> [大量影像資料]. 
+移動後：moved ──> [大量影像資料]. 
+       image ──> 有效但內容未指定的狀態. 
+
+通常只需轉移幾個內部欄位，成本接近 O(1)。  
+
+std::move 本身沒有搬資料，它只是把物件轉換成右值，表示這個物件的資源可以被接手。  
+真正執行資源轉移的是該型別的：move constructor 或 move assignment operator
+
+例如：
+```cpp
+std::string source = "large data";
+std::string destination = std::move(source);
+
+std::move(source) 只是允許 std::string 呼叫移動建構子。
+```
