@@ -193,10 +193,13 @@ auto value = queue.pop();
 if (value.has_value()) {
     std::cout << *value << '\n';
     /* 假設 pop() 的宣告是std::optional<T> pop();
-        auto value = queue.pop(); 編譯器會推導成：std::optional<T> value = queue.pop();
-        所以value 的型別不是 T，而是std::optional<T> 例如：std::optional<int> value;
-        要取得其中儲存的 int，可以寫 *value
-        或者使用 value.value() 取得元素，但如果 Queue 為空，會丟出 std::bad_optional_access 例外。
+        編譯器會將 auto value = queue.pop(); 
+        推導成：std::optional<T> value = queue.pop();
+        所以value 的型別不是 T，而是std::optional<T> 
+        例如：std::optional<int> value;
+
+        要取得其中儲存的 int，可以寫 *value 或者value.value()，
+        但如果 Queue 為空，會丟出 std::bad_optional_access 例外。
     */
 }
 ```
