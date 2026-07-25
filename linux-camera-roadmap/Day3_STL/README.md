@@ -200,9 +200,12 @@ queue.push(std::move(x));
 std::move(x) //產生右值表達式，因此可以綁定到 T&& value
 ```
 
-進入函式後，value 是 x 的別名。但直接寫：queue_.push(value);  
-此時 value 是具名表達式，所以是左值，底層可能選到複製版本： push(const T&)   
-原來的x通常不會被搬空，因為實際發生的是複製  
+進入函式後，value 是 x 的別名。但直接寫：
+```cpp 
+queue_.push(value);  
+// 此時 value 是具名表達式，所以是左值，底層可能選到複製版本： push(const T&)   
+// 原來的x通常不會被搬空，因為實際發生的是複製  
+```
 
 因此要把具名左值重新轉成右值，底層才會選push(T&&)：
 ```cpp 
