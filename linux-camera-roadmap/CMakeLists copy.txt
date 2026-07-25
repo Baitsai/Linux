@@ -1,0 +1,34 @@
+cmake_minimum_required(VERSION 3.16)
+
+project(HelloOpenCV LANGUAGES CXX)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+find_package(OpenCV REQUIRED)
+
+add_executable(hello_opencv
+    Day1Day2_memory/code/day2_memory_leak.cpp
+)
+
+target_link_libraries(hello_opencv
+    PRIVATE
+    ${OpenCV_LIBS}
+)
+
+target_include_directories(hello_opencv
+    PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/Day1Day2_memory/include
+)
+
+target_compile_options(hello_opencv
+    PRIVATE
+    -fsanitize=address
+    -fno-omit-frame-pointer
+    -g
+)
+
+target_link_options(hello_opencv
+    PRIVATE
+    -fsanitize=address
+)

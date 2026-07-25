@@ -1,4 +1,3 @@
-### Linux
 ## Day 1: Hello OpenCV 
 # Cmake
 1. 建立專案與設定 C++ 版本
