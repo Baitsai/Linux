@@ -168,4 +168,65 @@ auto another = std::move(frame); // 只能轉移所有權：
 ```
 轉移後 frame == nullptr 而 another 成為新的擁有者。
 
+編譯與執行  
+```bash
+clang++ -std=c++17 \
+    -Wall \
+    -Wextra \
+    -Wpedantic \
+    -Werror \
+    code/day3_main.cpp \
+    -o bounded_queue_demo
+```
+執行：
+```bash
+./bounded_queue_demo
+```
+# std::optional
+
+Queue 為空時，沒有元素可以回傳
+1. 回傳特殊數值，例如 nullptr、-1、0、""，但這些值可能是合法的元素，會造成混淆。
+2. 回傳 std::optional<T>，當 Queue 為空時回傳 std::nullopt，否則回傳元素。
+例如：  
+```cpp
+auto value = queue.pop();
+if (value.has_value()) {
+    std::cout << *value << '\n';
+    /* 假設 pop() 的宣告是std::optional<T> pop();
+        auto value = queue.pop(); 編譯器會推導成：std::optional<T> value = queue.pop();
+        所以value 的型別不是 T，而是std::optional<T> 例如：std::optional<int> value;
+        要取得其中儲存的 int，可以寫 *value
+        或者使用 value.value() 取得元素，但如果 Queue 為空，會丟出 std::bad_optional_access 例外。
+    */
+}
+```
+可以簡寫成：
+```cpp
+if (auto value = queue.pop()) {
+    std::cout << *value << '\n';
+}
+```
+c++允許直接在 if 條件裡宣告變數, value只作用於這個if 和對應的else裡.  
+這比回傳特殊數值更安全，因為 T 不一定有合理的「錯誤值」。
+
+# explicit 
+
+explicit 用來防止編譯器進行不明確的隱式轉型。
+
+沒有 explicit 時，編譯器可能允許：
+```cpp
+void process(BoundedQueue<int> queue);
+process(5);
+```
+因為 5 被自動轉成 BoundedQueue<int>(5)  
+可能讓程式「看起來像傳入整數」，實際上卻偷偷建立了一個 BoundedQueue<int>。
+
+但加上 explicit 後：
+```cpp
+process(5);  // 編譯錯誤
+//必須明確寫成：process(BoundedQueue<int>(5));
+```
+因此單一參數建構子通常建議加上 explicit，避免意外轉型。
+
+
 
