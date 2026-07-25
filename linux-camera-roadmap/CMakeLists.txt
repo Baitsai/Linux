@@ -7,35 +7,28 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(OpenCV REQUIRED)
 
-add_executable(heap_overflow_demo
-    Day1Day2_memory/code/day2_heap_overflow.cpp
+add_executable(main
+    Day3_STL/code/day3_main.cpp
 )
 
-target_include_directories(heap_overflow_demo PRIVATE
-    Day1Day2_memory/include
+target_link_libraries(main
+    PRIVATE
+    ${OpenCV_LIBS}
 )
 
-target_compile_options(heap_overflow_demo PRIVATE
+target_include_directories(main
+    PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/Day3_STL/include
+)
+
+target_compile_options(main
+    PRIVATE
     -fsanitize=address
     -fno-omit-frame-pointer
     -g
-    -O0
 )
 
-target_link_options(heap_overflow_demo PRIVATE
+target_link_options(main
+    PRIVATE
     -fsanitize=address
-)
-
-
-add_executable(memory_leak_demo
-    Day1Day2_memory/code/day2_memory_leak.cpp
-)
-
-target_include_directories(memory_leak_demo PRIVATE
-    Day1Day2_memory/include
-)
-
-target_compile_options(memory_leak_demo PRIVATE
-    -g
-    -O0
 )
