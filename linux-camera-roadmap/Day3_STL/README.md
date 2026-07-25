@@ -158,8 +158,7 @@ queue.push(std::move(frame));
 
 ## std::unique_ptr 為什麼只能 move？
 ```cpp
-std::unique_ptr<Frame> frame =
-    std::make_unique<Frame>();
+std::unique_ptr<Frame> frame = std::make_unique<Frame>();
 ```
 unique_ptr 表示資源只能有一個擁有者，因此不能複製：
 ```cpp
@@ -167,6 +166,6 @@ auto another = frame;  // 編譯錯誤
 
 auto another = std::move(frame); // 只能轉移所有權：
 ```
-轉移後：frame == nullptr 而 another 成為新的擁有者。
+轉移後 frame == nullptr 而 another 成為新的擁有者。
 
 
