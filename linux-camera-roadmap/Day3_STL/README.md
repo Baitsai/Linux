@@ -24,3 +24,59 @@ std::queue<int> queue;
 ```cpp
 std::queue<int, std::deque<int>> queue;
 ```
+
+# BoundedQueue
+
+一般的 Queue 可以持續新增元素，直到記憶體不足。
+BoundedQueue 則有固定容量：
+```cpp
+capacity = 3
+
+push(10) → [10]
+push(20) → [10, 20]
+push(30) → [10, 20, 30]
+push(40) → 失敗，Queue 已滿
+```
+常用在：  
+* 相機影像 Frame Buffer
+* Producer–Consumer 模型
+* 網路封包佇列
+* 即時影像處理 pipeline
+* 控制記憶體用量
+
+例如相機每秒產生 30 張影像，但影像處理速度只有每秒 20 張。若 Queue 沒有容量限制，尚未處理的影像會持續累積，  
+最終可能耗盡記憶體。
+
+單執行緒版本提供：
+```cpp
+push()
+emplace()
+pop()
+front()
+back()
+empty()
+full()
+size()
+capacity()
+clear()
+```
+* Queue 滿時，push() 回傳 false
+* Queue 空時，pop() 回傳 std::nullopt
+* front() 和 back() 使用 std::optional<std::reference_wrapper<...>>
+* 容量必須大於零
+* 支援泛型型別 T
+```cpp
+template <typename T> // T 代表之後使用這個類別時，才決定要放什麼型別
+class BoundedQueue {
+private:
+    std::queue<T> queue_;
+};
+```
+    typename 也可以寫成 class：
+```cpp
+template <class T>
+class BoundedQueue;
+```
+* 支援 move semantics(不複製物件擁有的資源，而是把資源的所有權轉移給另一個物)
+    這對大型資料很重要，例如：std::string std::vector 影像buffer Frame std::unique_ptr. 
+* 不負責多執行緒同步
