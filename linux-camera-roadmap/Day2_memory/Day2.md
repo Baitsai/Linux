@@ -1,15 +1,15 @@
 # Day 2: Hello Memory
 
-linux-camera-roadmap/
-├── CMakeLists.txt
-├── README.md
-├── notes/
-│   └── Day2.md ◁
-├── src/
-│   ├── main.cpp
-│   └── memory_demo.cpp ◀︎
-└── include/
-    └── frame.hpp ◀︎
+linux-camera-roadmap/  
+├── CMakeLists.txt  
+├── README.md  
+├── notes/  
+│   └── Day2.md ◁  
+├── code/  
+│   ├── main.cpp  
+│   └── memory_demo.cpp ◀︎  
+└── include/  
+    └── frame.hpp ◀︎  
 
 This directory contains public C++ header files.
 
