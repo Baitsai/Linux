@@ -102,9 +102,9 @@ std::vector<unsigned char> moved = std::move(image);
 ```
 通常不會逐個複製元素，而是把內部指標、容量等資源轉交給 moved。 
 
-移動前：image ──> [大量影像資料].  
-移動後：moved ──> [大量影像資料].  
-       image ──> 有效但內容未指定的狀態. 
+移動前：image ─> [大量影像資料].  
+移動後：moved ─> [大量影像資料].  
+       image ─> 有效但內容未指定的狀態. 
 
 通常只需轉移幾個內部欄位，成本接近 O(1)。  
 
@@ -118,3 +118,55 @@ std::string destination = std::move(source);
 
 std::move(source) 只是允許 std::string 呼叫移動建構子。
 ```
+
+## 左值與右值
+理解 move semantics 時，必須先知道左值與右值。  
+
+### 左值 lvalue: 有名稱、可以持續存取的物件
+```cpp
+std::string name = "Alice"; // name 是左值。
+```
+queue.push(name); 時通常會複製。
+
+### 右值 rvalue: 臨時物件或即將不再使用的值
+```cpp
+queue.push(std::string("Alice")); 
+// std::string("Alice") 是臨時物件，通常會移動。
+```
+也可以用 std::move 將左值轉成右值：queue.push(std::move(name));  
+
+用Frame看，假設：
+```cpp
+struct Frame {
+    uint64_t timestamp;
+    std::vector<unsigned char> data;
+};
+```
+建立一張影像：
+```cpp
+Frame frame;
+frame.timestamp = 12345;
+frame.data.resize(1920 * 1080 * 3);
+
+// 複製進 Queue, 這可能複製整個 data buffer。
+queue.push(frame); 
+
+// 移動進 Queue, Queue 可以接管frame.data的記憶體，避免複製數百萬個byte
+queue.push(std::move(frame));
+```
+在 Camera Pipeline 中，move semantics 很重要，因為影像資料通常很大
+
+## std::unique_ptr 為什麼只能 move？
+```cpp
+std::unique_ptr<Frame> frame =
+    std::make_unique<Frame>();
+```
+unique_ptr 表示資源只能有一個擁有者，因此不能複製：
+```cpp
+auto another = frame;  // 編譯錯誤
+
+auto another = std::move(frame); // 只能轉移所有權：
+```
+轉移後：frame == nullptr 而 another 成為新的擁有者。
+
+
