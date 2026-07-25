@@ -120,22 +120,22 @@ std::move(source) 只是允許 std::string 呼叫移動建構子。
 ```
 
 ## 左值與右值
-理解 move semantics 時，必須先知道左值與右值。  
 
 ### 左值 lvalue: 有名稱、可以持續存取的物件
 ```cpp
-std::string name = "Alice"; // name 是左值。
+std::string name = "Alice"; // name 是左值
+
+queue.push(name); // 此時通常會複製
 ```
-queue.push(name); 時通常會複製。
 
 ### 右值 rvalue: 臨時物件或即將不再使用的值
 ```cpp
-queue.push(std::string("Alice")); 
-// std::string("Alice") 是臨時物件，通常會移動。
-```
-也可以用 std::move 將左值轉成右值：queue.push(std::move(name));  
+queue.push(std::string("Alice")); // std::string("Alice") 是臨時物件，通常會移動。
 
-用Frame看，假設：
+queue.push(std::move(name)); // 也可以用 std::move 將左值轉成右值
+```
+
+### 以Frame為例
 ```cpp
 struct Frame {
     uint64_t timestamp;
