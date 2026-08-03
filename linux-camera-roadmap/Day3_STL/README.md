@@ -241,6 +241,19 @@ queue.push(T{});           // move
 原本兩個 reference overload 則可以先檢查 Queue 是否已滿，再決定是否複製或移動。
 因此BoundedQueue 寫兩個版本是比較完整且有效率的做法，但不是語法上的必要條件。
 
+### Args...
+Args... 是一組型別，數量可以是 0 個、1 個或很多個
+e.g queue.emplace(123, 640, 480); // Args... = int, int, int
+```cpp
+bool emplace(Args&&... args) 
+```
+args... 是一組實際參數
+Args&&... 是 forwarding references，可以接收左值與右值
+
+
+
+
+
 ## std::unique_ptr 為什麼只能 move？
 ```cpp
 std::unique_ptr<Frame> frame = std::make_unique<Frame>();

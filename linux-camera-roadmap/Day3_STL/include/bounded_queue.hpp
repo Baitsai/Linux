@@ -73,14 +73,15 @@ public:
         queue_.push(std::move(value));
         return true;
     }
-    
+
 
     /**
-     * @brief 直接在 Queue 內部建立元素。
+     * @brief 把建構 T 所需的參數直接轉交給底層 Queue，讓 T 直接在 Queue 裡建立
      *
      * @return true 建立成功。
      * @return false Queue 已滿。
      */
+     // Args... -> README.md: Args...
     template <typename... Args>
     bool emplace(Args&&... args) {
         if (full()) {
