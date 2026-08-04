@@ -82,13 +82,13 @@ public:
      * @return false Queue 已滿。
      */
      // Args... -> README.md: Args...
-    template <typename... Args>
-    bool emplace(Args&&... args) {
+    template <typename... Params> // 宣告一組模板型別參數
+    bool emplace(Params&&... params) {
         if (full()) {
             return false;
         }
 
-        queue_.emplace(std::forward<Args>(args)...);
+        queue_.emplace(std::forward<Params>(params)...);
         return true;
     }
 
@@ -98,14 +98,14 @@ public:
      * @return std::optional<T>
      *         Queue 非空時回傳元素，否則回傳 std::nullopt。
      */
-    [[nodiscard]] std::optional<T> pop() {
+    //[[nodiscard]]提醒呼叫者不要忽略回傳值。
+    //std::optional<T> 函式可能：回傳一個 T或沒有值
+    [[nodiscard]] std::optional<T> pop() { 
         if (empty()) {
             return std::nullopt;
         }
-
         T value = std::move(queue_.front());
         queue_.pop();
-
         return value;
     }
 
@@ -133,11 +133,16 @@ public:
      */
     [[nodiscard]]
     std::optional<std::reference_wrapper<const T>> front() const noexcept {
+        // Queue 為空時回傳「沒有值」；非空時回傳最前端元素的唯讀參考
+        // README.md:std::optional<std::reference_wrapper<const T>>
+        // noexcept 表示這個函式承諾不丟出例外。
         if (empty()) {
             return std::nullopt;
         }
 
         return std::cref(queue_.front());
+        // std::cref是 const reference wrapper 的建立工具
+        // std::cref(object) 會回傳：std::reference_wrapper<const T>
     }
 
     /**

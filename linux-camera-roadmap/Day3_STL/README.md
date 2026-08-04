@@ -247,11 +247,12 @@ e.g queue.emplace(123, 640, 480); // Args... = int, int, int
 ```cpp
 bool emplace(Args&&... args) 
 ```
-args... 是一組實際參數
+
+Args... 任意數量的型別 
 Args&&... 是 forwarding references，可以接收左值與右值
-
-
-
+args... 任意數量的實際參數 
+std::forward<Args>(args)... 保留各參數原本的左值或右值特性 
+emplace 直接在容器內建構物件
 
 
 ## std::unique_ptr 為什麼只能 move？
@@ -328,6 +329,48 @@ process(5);  // 編譯錯誤
 //必須明確寫成：process(BoundedQueue<int>(5));
 ```
 因此單一參數建構子通常建議加上 explicit，避免意外轉型。
+
+# front 回傳型別 std::optional<std::reference_wrapper<const T>>
+
+const T : 代表不能透過這個參考修改元素。  
+
+std::reference_wrapper<T> 可以理解成：把「參考」包裝成一個普通物件，讓它可以被複製、放進容器或 std::optional。
+
+例如普通reference ref是x的別名：
+```cpp
+int x = 10;
+int& ref = x; // 這裡的 & 是在宣告真正的 reference：int&
+```
+修改 ref，x 也會變成 20：
+```cpp
+ref = 20;
+```
+但 C++ 的 reference 本身有一些限制，例如不能直接寫：
+```cpp
+std::optional<int&> value;  // 不合法  
+```
+因此可以改成：
+```cpp
+std::optional<std::reference_wrapper<int>> value;
+```
+更接近概念：
+```cpp
+int x = 10;
+auto wrapped = std::ref(x); // std::ref(x) 回傳的是std::reference_wrapper<int>
+                            // 它不是 int&，而是一個「包裝 reference 的物件」
+int& ref = x;  // 兩者都連到同一個 x, 只是型別不同
+```
+
+std::optional<...> : 代表這個參考可能存在，也可能不存在。  
+因此完整意思是：可能有一個「指向唯讀 T 的參考」，也可能沒有.  
+
+## 為什麼不用 std::optional<const T&>？
+
+因為標準的 std::optional 不能直接存 reference：
+```cpp
+std::optional<const T&>  // 不合法
+```
+所以使用：std::reference_wrapper<const T>包住參考。
 
 
 
